@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-text-secondary font-sans antialiased selection:bg-primary/30 selection:text-white;
+    background-image: 
+      radial-gradient(circle at 50% 50%, rgba(255, 193, 7, 0.02) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-attachment: fixed;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight text-text-primary;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-surface/40 backdrop-blur-glass border border-white/10 rounded-lg shadow-xl;
+  }
+
+  .glass-panel-high {
+    @apply bg-surface/60 backdrop-blur-glass-lg border border-white/20 rounded-xl shadow-2xl;
+  }
+
+  .btn-sovereign {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-md font-bold transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
+  .btn-primary-sovereign {
+    @apply btn-sovereign bg-primary text-background hover:bg-primary-light shadow-neon-saffron hover:shadow-[0_0_30px_rgba(255,193,7,0.3)];
+  }
+  
+  .btn-secondary-sovereign {
+    @apply btn-sovereign bg-surface/40 backdrop-blur-xs border border-primary text-primary hover:bg-primary/10;
+  }
+
+  .btn-teal-sovereign {
+    @apply btn-sovereign bg-secondary text-background hover:bg-secondary-light shadow-neon-teal hover:shadow-[0_0_30px_rgba(0,245,212,0.3)];
+  }
+
+  .input-sovereign {
+    @apply bg-surface-low/50 border border-white/10 rounded-md px-4 py-3 text-text-primary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all placeholder:text-text-muted;
+  }
+
+  .stat-card {
+    @apply glass-panel p-6 flex flex-col items-center justify-center text-center hover:border-primary/30 transition-all duration-500;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-surface-higher rounded-full hover:bg-primary/50 transition-colors;
+}
+
+.text-gradient-saffron {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-light;
+}
+
+.text-gradient-teal {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-secondary to-secondary-light;
+}
