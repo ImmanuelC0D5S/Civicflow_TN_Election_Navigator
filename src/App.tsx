@@ -6,6 +6,7 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { ChatBot } from './components/molecules/ChatBot';
 
 // Lazy loaded components for code splitting
 const Home = lazy(() => import('./components/pages/Home').then(m => ({ default: m.Home })));
@@ -50,6 +51,7 @@ function App() {
                       <p className="mt-2 uppercase tracking-widest">Non-partisan • Educational • Secure</p>
                     </div>
                   </footer>
+                  <ChatBot />
                 </div>
               </Router>
             </ProgressProvider>
