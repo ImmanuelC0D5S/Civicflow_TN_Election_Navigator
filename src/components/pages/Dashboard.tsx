@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Award, FileCheck, MapPin, Download, ExternalLink, Calendar, CheckCircle2 } from 'lucide-react';
-import { cn } from '../atoms/Button';
+import { Award, FileCheck, Download, Calendar, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useProgress } from '../../contexts/ProgressContext';
 

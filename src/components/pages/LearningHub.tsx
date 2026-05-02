@@ -1,10 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  BookOpen, 
   Award, 
   CheckCircle, 
-  Video, 
   ShieldCheck, 
   Fingerprint, 
   Cpu, 

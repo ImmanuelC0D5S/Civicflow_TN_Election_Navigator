@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Circle, ArrowRight, BookOpen, MapPin, X } from 'lucide-react';
+import { CheckCircle2, BookOpen, MapPin, X } from 'lucide-react';
 import { TN_TIMELINE } from '../../data/tn_mock_data';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { Button, cn } from '../atoms/Button';
+import { cn } from '../atoms/Button';
 
 export const Timeline: React.FC = () => {
   const { language } = useLanguage();
