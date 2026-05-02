@@ -23,4 +23,13 @@ dist-ssr
 *.sln
 *.sw?
 .env
+*.txt
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!tsconfig.node.json
+!tsconfig.app.json
+!eslint.json # except if you actually want eslint config in json, but it's usually .js
+
 
