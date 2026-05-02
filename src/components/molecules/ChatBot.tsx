@@ -32,12 +32,13 @@ export const ChatBot: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const history = messages;
+      const history = messages.filter((m, i) => i > 0 || m.role === 'user');
       const response = await getGeminiResponse(input, history);
       setMessages(prev => [...prev, { role: 'model', parts: [{ text: response }] }]);
-    } catch (error) {
-      console.error("Chat error:", error);
-      setMessages(prev => [...prev, { role: 'model', parts: [{ text: "I'm having trouble connecting right now. Please try again later." }] }]);
+    } catch (error: any) {
+      console.error("Gemini Error:", error);
+      const detailedError = error?.message || "Unknown connection error";
+      setMessages(prev => [...prev, { role: 'model', parts: [{ text: `Error: ${detailedError}` }] }]);
     } finally {
       setIsLoading(false);
     }
@@ -129,7 +130,7 @@ export const ChatBot: React.FC = () => {
                 </button>
               </div>
               <p className="text-[8px] text-text-muted mt-2 text-center uppercase tracking-[0.2em] font-bold">
-                Secured Civic AI • Gemini 1.5 Flash
+                Secured Civic AI • Gemini 3 Flash Preview
               </p>
             </div>
           </motion.div>

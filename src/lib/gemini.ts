@@ -1,7 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(API_KEY || '');
 
 const SYSTEM_PROMPT = `
 You are "CivicGuide", an AI assistant for the CivicFlow TN Election Navigator application.
@@ -28,11 +27,12 @@ export interface ChatMessage {
 
 export const getGeminiResponse = async (userPrompt: string, history: ChatMessage[]) => {
   if (!API_KEY) {
-    throw new Error("Gemini API key is missing. Please check your .env file.");
+    throw new Error("VITE_GEMINI_API_KEY is missing from environment variables. Please check your .env file.");
   }
 
+  const genAI = new GoogleGenerativeAI(API_KEY);
   const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash",
+    model: "gemini-3-flash-preview",
     systemInstruction: SYSTEM_PROMPT,
   });
 
