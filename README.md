@@ -6,6 +6,31 @@ CivicFlow TN is a premium, data-driven platform designed to navigate the democra
 
 ---
 
+## 🎯 Project Overview
+
+### 🏛️ Chosen Vertical: Civic Technology (GovTech)
+CivicFlow TN focuses on **Election Participation and Literacy**. It aims to bridge the gap between complex democratic processes and citizen engagement through high-precision digital tools.
+
+### 🧠 Approach and Logic
+- **Midnight Sovereign Aesthetic**: We moved away from generic government UI in favor of a "Tactical Premium" design. This makes civic participation feel like an empowering, high-stakes mission rather than a bureaucratic chore.
+- **Gamified Literacy**: By introducing a **Voter Readiness Score** and **XP-based Learning Hub**, we incentivize users to complete educational modules that are often ignored.
+- **Progressive Disclosure**: Information is revealed through a linear "Journey" (Timeline and Academy), preventing cognitive overload by guiding users through one phase of the election at a time.
+
+### ⚙️ How the Solution Works
+1. **Real-time Persistence**: The app uses **Firebase Firestore** to sync a user's `UserProgress` (completed modules, registration status) across devices.
+2. **Context-Driven Architecture**: 
+   - `AuthContext`: Manages secure Google OAuth sessions.
+   - `ProgressContext`: Bridges the gap between the Learning Hub and the User Dashboard, calculating readiness scores on the fly.
+   - `LanguageContext`: Enables seamless switching between English and Tamil using a key-based translation engine.
+3. **Validation & Security**: Form inputs (like the Registration checker) are validated using **Zod** and sanitized with **DOMPurify** to ensure data integrity and security.
+
+### 📝 Assumptions Made
+- **Data Source**: For this demonstration, we assume a centralized API exists for Tamil Nadu election data; current data is served via a robust **Mock Data Engine** (`tn_mock_data.ts`).
+- **Age Requirement**: The system assumes the standard Indian voting age of 18+, which is enforced via the `registrationSchema` validation.
+- **Connectivity**: While the app has local-storage fallbacks, it assumes an active internet connection for the full "Sovereign" experience (Firebase sync and Google Maps).
+
+---
+
 ## ✨ Core Features
 
 ### 🗺️ Polling Locator (Tactical Map)
