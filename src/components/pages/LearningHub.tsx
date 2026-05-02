@@ -20,16 +20,12 @@ interface Article {
   category: string;
   readTime: string;
   content: React.ReactNode;
-  icon: any;
+  icon: React.ElementType;
   difficulty: 'Beginner' | 'Advanced';
   xp: number;
 }
 
-export const LearningHub: React.FC = () => {
-  const { progress, markModuleCompleted } = useProgress();
-  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
-
-  const articles: Article[] = [
+const articles: Article[] = [
     {
       id: 'voting-rights',
       title: 'Constitutional Sovereignty',
@@ -129,12 +125,16 @@ export const LearningHub: React.FC = () => {
     }
   ];
 
+export const LearningHub: React.FC = () => {
+  const { progress, markModuleCompleted } = useProgress();
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+
   const activeLevel = useMemo(() => {
     if (!progress) return 0;
     // Find the first article index that is NOT completed
     const firstIncomplete = articles.findIndex(a => !progress.completedModules.includes(a.id));
     return firstIncomplete === -1 ? articles.length : firstIncomplete;
-  }, [progress, articles]);
+  }, [progress]);
 
   const handleCompleteArticle = (id: string) => {
     markModuleCompleted(id);

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import { motion } from 'framer-motion';
-import { Search, Navigation, Info, X, MapPin } from 'lucide-react';
+import { Search, Navigation, Info, X, MapPin, AlertCircle } from 'lucide-react';
 import { cn } from '../atoms/Button';
 import { MOCK_BOOTHS } from '../../data/tn_mock_data';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -47,9 +47,10 @@ const mapOptions = {
 
 export const PollingLocator: React.FC = () => {
   const { language } = useLanguage();
-  const { isLoaded } = useJsApiLoader({
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+  const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''
+    googleMapsApiKey: apiKey
   });
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -60,12 +61,14 @@ export const PollingLocator: React.FC = () => {
     setMap(map);
   }, []);
 
-  const onUnmount = useCallback(function callback(_map: google.maps.Map) {
+  const onUnmount = useCallback(function callback() {
     setMap(null);
   }, []);
 
-  const getName = (item: any) => language === 'en' ? item.name_en : item.name_ta;
-  const getAddress = (item: any) => language === 'en' ? item.address_en : item.address_ta;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getName = useCallback((item: Record<string, any>) => language === 'en' ? item.name_en : item.name_ta, [language]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getAddress = useCallback((item: Record<string, any>) => language === 'en' ? item.address_en : item.address_ta, [language]);
 
   const filteredBooths = useMemo(() => {
     if (!searchQuery) return MOCK_BOOTHS;
@@ -75,7 +78,7 @@ export const PollingLocator: React.FC = () => {
       b.name_ta.includes(lowerQ) ||
       getAddress(b).toLowerCase().includes(lowerQ)
     );
-  }, [searchQuery, language]); // Added language to dependency array for correctness
+  }, [searchQuery, getAddress]); // Added getAddress to dependency array for correctness
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +93,19 @@ export const PollingLocator: React.FC = () => {
     <div className="bg-background min-h-[calc(100vh-5rem)] relative overflow-hidden">
       {/* Map Backdrop */}
       <div className="absolute inset-0 z-0">
-        {isLoaded ? (
+        {!apiKey ? (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-surface-high border border-white/5">
+             <AlertCircle className="w-12 h-12 text-amber-500 mb-4" />
+             <h3 className="text-xl font-bold text-white mb-2">Maps API Key Missing</h3>
+             <p className="text-text-muted text-sm text-center max-w-md">Please configure your VITE_GOOGLE_MAPS_API_KEY in the .env file to enable interactive maps.</p>
+          </div>
+        ) : loadError ? (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-surface-high border border-white/5">
+             <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+             <h3 className="text-xl font-bold text-white mb-2">Failed to load Map</h3>
+             <p className="text-text-muted text-sm text-center max-w-md">Please check your network or API key configuration.</p>
+          </div>
+        ) : isLoaded ? (
           <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
@@ -193,6 +208,7 @@ export const PollingLocator: React.FC = () => {
               <button 
                 onClick={() => setSelectedBooth(null)}
                 className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                aria-label="Close details"
               >
                 <X className="w-5 h-5 text-text-muted" />
               </button>
@@ -219,7 +235,7 @@ export const PollingLocator: React.FC = () => {
 
             <div className="flex gap-4">
               <button 
-                onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${selectedBooth.coordinates.lat},${selectedBooth.coordinates.lng}`, '_blank')}
+                onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${selectedBooth.coordinates.lat},${selectedBooth.coordinates.lng}`, '_blank', 'noopener,noreferrer')}
                 className="btn-primary-sovereign flex-grow py-4"
               >
                 <Navigation className="w-4 h-4 mr-3" /> GET DIRECTIONS

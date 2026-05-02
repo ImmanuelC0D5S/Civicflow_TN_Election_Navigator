@@ -10,17 +10,18 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<ThemeMode>('light');
+  const [theme, setTheme] = useState<ThemeMode>(() => {
+    const saved = localStorage.getItem('civicflow_theme') as ThemeMode;
+    return saved || 'light';
+  });
 
   useEffect(() => {
-    const saved = localStorage.getItem('civicflow_theme') as ThemeMode;
-    if (saved) {
-      setTheme(saved);
-      if (saved === 'dark-hc') {
-        document.documentElement.classList.add('dark', 'hc');
-      }
+    if (theme === 'dark-hc') {
+      document.documentElement.classList.add('dark', 'hc');
+    } else {
+      document.documentElement.classList.remove('dark', 'hc');
     }
-  }, []);
+  }, [theme]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark-hc' : 'light';
@@ -41,6 +42,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {

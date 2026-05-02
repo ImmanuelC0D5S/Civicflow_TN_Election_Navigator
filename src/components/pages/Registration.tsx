@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Search, MapPin, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Button } from '../atoms/Button';
@@ -23,7 +23,7 @@ export const Registration: React.FC = () => {
   const [isChecking, setIsChecking] = useState(false);
   const [result, setResult] = useState<'unregistered' | 'registered' | null>(null);
 
-  const handleCheck = (e: React.FormEvent) => {
+  const handleCheck = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
     setIsChecking(true);
@@ -52,14 +52,14 @@ export const Registration: React.FC = () => {
     } catch (err) {
       setIsChecking(false);
       if (err instanceof ZodError) {
-        const newErrors: any = {};
+        const newErrors: Record<string, string> = {};
         err.issues.forEach(e => {
           if (e.path[0]) newErrors[e.path[0] as string] = e.message;
         });
         setErrors(newErrors);
       }
     }
-  };
+  }, [formData, setRegistrationStatus]);
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
@@ -94,11 +94,13 @@ export const Registration: React.FC = () => {
                 <input
                   type="text"
                   id="firstName"
+                  aria-invalid={!!errors.firstName}
+                  aria-describedby={errors.firstName ? "firstName-error" : undefined}
                   className={`w-full px-4 py-2 border rounded-md focus:ring-primary focus:border-primary transition-colors ${errors.firstName ? 'border-red-500' : 'border-slate-300'}`}
                   value={formData.firstName}
                   onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                 />
-                {errors.firstName && <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>}
+                {errors.firstName && <p id="firstName-error" role="alert" className="mt-1 text-sm text-red-600">{errors.firstName}</p>}
               </div>
               <div>
                 <label htmlFor="lastName" className="block text-sm font-medium text-slate-700 mb-1">
@@ -107,11 +109,13 @@ export const Registration: React.FC = () => {
                 <input
                   type="text"
                   id="lastName"
+                  aria-invalid={!!errors.lastName}
+                  aria-describedby={errors.lastName ? "lastName-error" : undefined}
                   className={`w-full px-4 py-2 border rounded-md focus:ring-primary focus:border-primary transition-colors ${errors.lastName ? 'border-red-500' : 'border-slate-300'}`}
                   value={formData.lastName}
                   onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                 />
-                {errors.lastName && <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>}
+                {errors.lastName && <p id="lastName-error" role="alert" className="mt-1 text-sm text-red-600">{errors.lastName}</p>}
               </div>
             </div>
             
@@ -123,11 +127,13 @@ export const Registration: React.FC = () => {
                 <input
                   type="date"
                   id="dob"
+                  aria-invalid={!!errors.dob}
+                  aria-describedby={errors.dob ? "dob-error" : undefined}
                   className={`w-full px-4 py-2 border rounded-md focus:ring-primary focus:border-primary transition-colors ${errors.dob ? 'border-red-500' : 'border-slate-300'}`}
                   value={formData.dob}
                   onChange={(e) => setFormData({...formData, dob: e.target.value})}
                 />
-                {errors.dob && <p className="mt-1 text-sm text-red-600">{errors.dob}</p>}
+                {errors.dob && <p id="dob-error" role="alert" className="mt-1 text-sm text-red-600">{errors.dob}</p>}
               </div>
               <div>
                 <label htmlFor="zipCode" className="block text-sm font-medium text-slate-700 mb-1">
@@ -136,12 +142,14 @@ export const Registration: React.FC = () => {
                 <input
                   type="text"
                   id="zipCode"
+                  aria-invalid={!!errors.zipCode}
+                  aria-describedby={errors.zipCode ? "zipCode-error" : undefined}
                   placeholder="e.g. 600001"
                   className={`w-full px-4 py-2 border rounded-md focus:ring-primary focus:border-primary transition-colors ${errors.zipCode ? 'border-red-500' : 'border-slate-300'}`}
                   value={formData.zipCode}
                   onChange={(e) => setFormData({...formData, zipCode: e.target.value})}
                 />
-                {errors.zipCode && <p className="mt-1 text-sm text-red-600">{errors.zipCode}</p>}
+                {errors.zipCode && <p id="zipCode-error" role="alert" className="mt-1 text-sm text-red-600">{errors.zipCode}</p>}
               </div>
             </div>
 

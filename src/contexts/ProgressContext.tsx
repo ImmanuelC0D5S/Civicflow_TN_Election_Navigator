@@ -16,24 +16,26 @@ const ProgressContext = createContext<ProgressContextType | undefined>(undefined
 
 export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
-  const [progress, setProgress] = useState<UserProgress | null>(null);
+  const [progress, setProgress] = useState<UserProgress | null>(() => {
+    // Synchronously initialize from localStorage if no user context yet
+    // This avoids the double render and useEffect setState warning
+    const stored = localStorage.getItem('election_progress');
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    return {
+      userId: 'anonymous',
+      completedModules: [],
+      quizScores: {},
+      lastVisited: new Date(),
+      registered: false
+    };
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
-      // For non-logged in users, use local storage
-      const stored = localStorage.getItem('election_progress');
-      if (stored) {
-        setProgress(JSON.parse(stored));
-      } else {
-        setProgress({
-          userId: 'anonymous',
-          completedModules: [],
-          quizScores: {},
-          lastVisited: new Date(),
-          registered: false
-        });
-      }
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false);
       return;
     }
@@ -102,6 +104,7 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useProgress = () => {
   const context = useContext(ProgressContext);
   if (context === undefined) {

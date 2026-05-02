@@ -38,7 +38,13 @@ export const Home: React.FC = () => {
                 </Link>
               ) : (
                 <button 
-                  onClick={() => signInWithGoogle()}
+                  onClick={async () => {
+                    try {
+                      await signInWithGoogle();
+                    } catch (error) {
+                      console.error('Authentication failed:', error);
+                    }
+                  }}
                   className="btn-primary-sovereign w-full sm:w-auto px-12"
                 >
                   GET STARTED

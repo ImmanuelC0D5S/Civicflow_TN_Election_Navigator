@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 type Language = 'en' | 'ta';
 
@@ -13,14 +13,13 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 import { STRINGS } from '../lib/constants';
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<Language>('en');
-
-  useEffect(() => {
+  const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('civicflow_lang') as Language;
     if (saved && (saved === 'en' || saved === 'ta')) {
-      setLanguageState(saved);
+      return saved;
     }
-  }, []);
+    return 'en';
+  });
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
@@ -29,11 +28,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const t = (keyPath: string): string => {
     const keys = keyPath.split('.');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let current: any = STRINGS[language];
     
     for (const key of keys) {
       if (current[key] === undefined) {
         // Fallback to English if Tamil string is missing
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let fallback: any = STRINGS['en'];
         for (const fbKey of keys) {
           if (!fallback[fbKey]) return keyPath;
@@ -53,6 +54,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (context === undefined) {
