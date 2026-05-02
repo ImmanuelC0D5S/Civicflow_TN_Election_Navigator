@@ -53,7 +53,7 @@ export const Registration: React.FC = () => {
       setIsChecking(false);
       if (err instanceof ZodError) {
         const newErrors: any = {};
-        err.errors.forEach(e => {
+        err.issues.forEach(e => {
           if (e.path[0]) newErrors[e.path[0] as string] = e.message;
         });
         setErrors(newErrors);

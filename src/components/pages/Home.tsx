@@ -1,13 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, MapPin, CheckCircle, Calendar } from 'lucide-react';
-import { Button } from '../atoms/Button';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { ArrowRight, BookOpen, Calendar } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 export const Home: React.FC = () => {
-  const { language, t } = useLanguage();
   const { user, signInWithGoogle } = useAuth();
 
   return (
