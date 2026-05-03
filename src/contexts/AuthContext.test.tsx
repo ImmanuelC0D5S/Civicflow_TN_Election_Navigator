@@ -6,7 +6,7 @@ import { signInWithPopup, signOut } from 'firebase/auth';
 // Mock firebase/auth
 vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(),
-  onAuthStateChanged: vi.fn((auth, cb) => {
+  onAuthStateChanged: vi.fn((_auth, cb) => {
     cb(null); // Initial state: not logged in
     return vi.fn(); // Unsubscribe
   }),

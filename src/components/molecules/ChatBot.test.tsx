@@ -42,12 +42,8 @@ describe('ChatBot Component', () => {
     const sendButton = screen.getByRole('button', { name: /Send Message/i });
 
     // Type and send
-    // fireEvent.change(input, { target: { value: 'Hello' } }); // fireEvent is not imported, using screen
-    (input as HTMLInputElement).value = 'Hello';
-    const event = new Event('input', { bubbles: true });
-    input.dispatchEvent(event);
-    
-    sendButton.click();
+    fireEvent.change(input, { target: { value: 'Hello' } });
+    fireEvent.click(sendButton);
 
     await waitFor(() => {
       expect(screen.getByText(/Error: API Key Invalid/i)).toBeInTheDocument();
