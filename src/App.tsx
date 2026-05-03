@@ -7,6 +7,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { ChatBot } from './components/molecules/ChatBot';
+import { Toaster } from 'react-hot-toast';
 
 // Lazy loaded components for code splitting
 const Home = lazy(() => import('./components/pages/Home').then(m => ({ default: m.Home })));
@@ -58,6 +59,13 @@ function App() {
           </LanguageProvider>
         </ThemeProvider>
       </AuthProvider>
+      <Toaster position="top-right" toastOptions={{
+        style: {
+          background: '#1A1D1D',
+          color: '#F4F7F7',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+        }
+      }} />
     </GoogleOAuthProvider>
   );
 }

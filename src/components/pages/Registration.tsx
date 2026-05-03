@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Search, MapPin, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Button } from '../atoms/Button';
@@ -7,6 +7,8 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { registrationSchema, type RegistrationInput } from '../../lib/validations';
 import DOMPurify from 'dompurify';
 import { ZodError } from 'zod';
+import ReCAPTCHA from "react-google-recaptcha";
+import toast from 'react-hot-toast';
 
 export const Registration: React.FC = () => {
   const { setRegistrationStatus } = useProgress();
@@ -22,9 +24,17 @@ export const Registration: React.FC = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof RegistrationInput, string>>>({});
   const [isChecking, setIsChecking] = useState(false);
   const [result, setResult] = useState<'unregistered' | 'registered' | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const handleCheck = useCallback((e: React.FormEvent) => {
     e.preventDefault();
+    
+    const token = recaptchaRef.current?.getValue();
+    if (!token && import.meta.env.PROD) {
+      toast.error("Please complete the reCAPTCHA");
+      return;
+    }
+
     setErrors({});
     setIsChecking(true);
     setResult(null);
@@ -42,13 +52,16 @@ export const Registration: React.FC = () => {
       registrationSchema.parse(sanitizedData);
 
       // Simulate API call to Google Civic Info API / TN Election Commision API
-      setTimeout(() => {
-        setIsChecking(false);
-        // Mock logic: if zip code ends in 0, unregistered, else registered
-        const isRegistered = !sanitizedData.zipCode.endsWith('0');
-        setResult(isRegistered ? 'registered' : 'unregistered');
-        setRegistrationStatus(isRegistered);
-      }, 1500);
+        setTimeout(() => {
+          setIsChecking(false);
+          // Mock logic: if zip code ends in 0, unregistered, else registered
+          const isRegistered = !sanitizedData.zipCode.endsWith('0');
+          setResult(isRegistered ? 'registered' : 'unregistered');
+          setRegistrationStatus(isRegistered);
+          
+          // Reset recaptcha for next attempt
+          recaptchaRef.current?.reset();
+        }, 1500);
     } catch (err) {
       setIsChecking(false);
       if (err instanceof ZodError) {
@@ -151,6 +164,14 @@ export const Registration: React.FC = () => {
                 />
                 {errors.zipCode && <p id="zipCode-error" role="alert" className="mt-1 text-sm text-red-600">{errors.zipCode}</p>}
               </div>
+            </div>
+
+            <div className="flex justify-center my-4">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"} // Use test key as fallback
+                theme="dark"
+              />
             </div>
 
             <Button type="submit" variant="primary" className="w-full" isLoading={isChecking}>

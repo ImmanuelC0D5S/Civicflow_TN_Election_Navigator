@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { useDebouncedValue } from '@mantine/hooks';
 import { motion } from 'framer-motion';
 import { Search, Navigation, Info, X, MapPin, AlertCircle } from 'lucide-react';
 import { cn } from '../atoms/Button';
@@ -56,6 +57,9 @@ export const PollingLocator: React.FC = () => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [selectedBooth, setSelectedBooth] = useState<typeof MOCK_BOOTHS[0] | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery] = useDebouncedValue(searchQuery, 300);
+
+  const memoizedMapOptions = useMemo(() => mapOptions, []);
 
   const onLoad = useCallback(function callback(map: google.maps.Map) {
     setMap(map);
@@ -71,14 +75,14 @@ export const PollingLocator: React.FC = () => {
   const getAddress = useCallback((item: Record<string, any>) => language === 'en' ? item.address_en : item.address_ta, [language]);
 
   const filteredBooths = useMemo(() => {
-    if (!searchQuery) return MOCK_BOOTHS;
-    const lowerQ = searchQuery.toLowerCase();
+    if (!debouncedQuery) return MOCK_BOOTHS;
+    const lowerQ = debouncedQuery.toLowerCase();
     return MOCK_BOOTHS.filter(b => 
       b.name_en.toLowerCase().includes(lowerQ) || 
       b.name_ta.includes(lowerQ) ||
       getAddress(b).toLowerCase().includes(lowerQ)
     );
-  }, [searchQuery, getAddress]); // Added getAddress to dependency array for correctness
+  }, [debouncedQuery, getAddress]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,7 +116,7 @@ export const PollingLocator: React.FC = () => {
             zoom={7}
             onLoad={onLoad}
             onUnmount={onUnmount}
-            options={mapOptions}
+            options={memoizedMapOptions}
           >
             {filteredBooths.map((booth) => (
               <Marker

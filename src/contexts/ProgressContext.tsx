@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from './AuthContext';
 import type { UserProgress } from '../types/election.types';
@@ -40,27 +40,33 @@ export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       return;
     }
 
-    // For logged in users, sync with Firestore
+    // For logged in users, fetch once from Firestore
     const progressDoc = doc(db, 'users', user.uid, 'data', 'progress');
     
-    const unsubscribe = onSnapshot(progressDoc, (docSnap) => {
-      if (docSnap.exists()) {
-        setProgress(docSnap.data() as UserProgress);
-      } else {
-        const initialProgress = {
-          userId: user.uid,
-          completedModules: [],
-          quizScores: {},
-          lastVisited: new Date(),
-          registered: false
-        };
-        setProgress(initialProgress);
-        setDoc(progressDoc, initialProgress);
+    const fetchProgress = async () => {
+      try {
+        const docSnap = await getDoc(progressDoc);
+        if (docSnap.exists()) {
+          setProgress(docSnap.data() as UserProgress);
+        } else {
+          const initialProgress = {
+            userId: user.uid,
+            completedModules: [],
+            quizScores: {},
+            lastVisited: new Date(),
+            registered: false
+          };
+          setProgress(initialProgress);
+          await setDoc(progressDoc, initialProgress);
+        }
+      } catch (error) {
+        console.error("Error fetching progress:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    };
 
-    return () => unsubscribe();
+    fetchProgress();
   }, [user]);
 
   const saveProgress = async (newProgress: UserProgress) => {
